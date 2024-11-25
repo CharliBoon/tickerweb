@@ -1,0 +1,159 @@
+after installing nvm-windows, install latest node.js LTS ...
+(also vue/vuejs cli ... https://cli.vuejs.org/guide/installation.html)
+
+Microsoft Windows [Version 10.0.19045.4894]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Malcolm>nvm
+
+Running version 1.1.12.
+
+Usage:
+
+  nvm arch                     : Show if node is running in 32 or 64 bit mode.
+  nvm current                  : Display active version.
+  nvm debug                    : Check the NVM4W process for known problems (troubleshooter).
+  nvm install <version> [arch] : The version can be a specific version, "latest" for the latest current version, or "lts" for the
+                                 most recent LTS version. Optionally specify whether to install the 32 or 64 bit version (defaults
+                                 to system arch). Set [arch] to "all" to install 32 AND 64 bit versions.
+                                 Add --insecure to the end of this command to bypass SSL validation of the remote download server.
+  nvm list [available]         : List the node.js installations. Type "available" at the end to see what can be installed. Aliased as ls.
+  nvm on                       : Enable node.js version management.
+  nvm off                      : Disable node.js version management.
+  nvm proxy [url]              : Set a proxy to use for downloads. Leave [url] blank to see the current proxy.
+                                 Set [url] to "none" to remove the proxy.
+  nvm node_mirror [url]        : Set the node mirror. Defaults to https://nodejs.org/dist/. Leave [url] blank to use default url.
+  nvm npm_mirror [url]         : Set the npm mirror. Defaults to https://github.com/npm/cli/archive/. Leave [url] blank to default url.
+  nvm uninstall <version>      : The version must be a specific version.
+  nvm use [version] [arch]     : Switch to use the specified version. Optionally use "latest", "lts", or "newest".
+                                 "newest" is the latest installed version. Optionally specify 32/64bit architecture.
+                                 nvm use <arch> will continue using the selected version, but switch to 32/64 bit mode.
+  nvm root [path]              : Set the directory where nvm should store different versions of node.js.
+                                 If <path> is not set, the current root will be displayed.
+  nvm [--]version              : Displays the current running version of nvm for Windows. Aliased as v.
+
+
+C:\Users\Malcolm>nvm list
+
+No installations recognized.
+
+C:\Users\Malcolm>nvm list available
+
+|   CURRENT    |     LTS      |  OLD STABLE  | OLD UNSTABLE |
+|--------------|--------------|--------------|--------------|
+|    22.9.0    |   20.18.0    |   0.12.18    |   0.11.16    |
+|    22.8.0    |   20.17.0    |   0.12.17    |   0.11.15    |
+|    22.7.0    |   20.16.0    |   0.12.16    |   0.11.14    |
+|    22.6.0    |   20.15.1    |   0.12.15    |   0.11.13    |
+|    22.5.1    |   20.15.0    |   0.12.14    |   0.11.12    |
+|    22.5.0    |   20.14.0    |   0.12.13    |   0.11.11    |
+|    22.4.1    |   20.13.1    |   0.12.12    |   0.11.10    |
+|    22.4.0    |   20.13.0    |   0.12.11    |    0.11.9    |
+|    22.3.0    |   20.12.2    |   0.12.10    |    0.11.8    |
+|    22.2.0    |   20.12.1    |    0.12.9    |    0.11.7    |
+|    22.1.0    |   20.12.0    |    0.12.8    |    0.11.6    |
+|    22.0.0    |   20.11.1    |    0.12.7    |    0.11.5    |
+|    21.7.3    |   20.11.0    |    0.12.6    |    0.11.4    |
+|    21.7.2    |   20.10.0    |    0.12.5    |    0.11.3    |
+|    21.7.1    |    20.9.0    |    0.12.4    |    0.11.2    |
+|    21.7.0    |   18.20.4    |    0.12.3    |    0.11.1    |
+|    21.6.2    |   18.20.3    |    0.12.2    |    0.11.0    |
+|    21.6.1    |   18.20.2    |    0.12.1    |    0.9.12    |
+|    21.6.0    |   18.20.1    |    0.12.0    |    0.9.11    |
+|    21.5.0    |   18.20.0    |   0.10.48    |    0.9.10    |
+
+This is a partial list. For a complete list, visit https://nodejs.org/en/download/releases
+
+C:\Users\Malcolm>nvm install --lts
+"--" prefixes are unnecessary in NVM for Windows!
+attempting to install "lts" instead...
+
+Downloading node.js version 20.18.0 (64-bit)...
+Extracting node and npm...
+Complete
+npm v10.8.2 installed successfully.
+
+
+Installation complete. If you want to use this version, type
+
+nvm use 20.18.0
+
+C:\Users\Malcolm>npm install -g @vue/cli
+'npm' is not recognized as an internal or external command,
+operable program or batch file.
+
+npm warn deprecated source-map-url@0.4.1: See https://github.com/lydell/source-map-url#deprecated
+npm warn deprecated resolve-url@0.2.1: https://github.com/lydell/resolve-url#deprecated
+npm warn deprecated urix@0.1.0: Please see https://github.com/lydell/urix#deprecated
+npm warn deprecated source-map-resolve@0.5.3: See https://github.com/lydell/source-map-resolve#deprecated
+npm warn deprecated @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+npm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated apollo-datasource@3.3.2: The `apollo-datasource` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
+npm warn deprecated apollo-server-errors@3.3.1: The `apollo-server-errors` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). This package's functionality is now found in the `@apollo/server` package. See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
+npm warn deprecated apollo-server-plugin-base@3.7.2: The `apollo-server-plugin-base` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). This package's functionality is now found in the `@apollo/server` package. See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
+npm warn deprecated apollo-server-types@3.8.0: The `apollo-server-types` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). This package's functionality is now found in the `@apollo/server` package. See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
+npm warn deprecated apollo-reporting-protobuf@3.4.0: The `apollo-reporting-protobuf` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). This package's functionality is now found in the `@apollo/usage-reporting-protobuf` package. See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
+npm warn deprecated apollo-server-env@4.2.1: The `apollo-server-env` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). This package's functionality is now found in the `@apollo/utils.fetcher` package. See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
+npm warn deprecated shortid@2.2.16: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated subscriptions-transport-ws@0.11.0: The `subscriptions-transport-ws` package is no longer maintained. We recommend you use `graphql-ws` instead. For help migrating Apollo software to `graphql-ws`, see https://www.apollographql.com/docs/apollo-server/data/subscriptions/#switching-from-subscriptions-transport-ws    For general help using `graphql-ws`, see https://github.com/enisdenjo/graphql-ws/blob/master/README.md
+npm warn deprecated vue@2.7.16: Vue 2 has reached EOL and is no longer actively maintained. See https://v2.vuejs.org/eol/ for more details.
+
+added 851 packages in 2m
+npm notice
+npm notice New minor version of npm available! 10.8.2 -> 10.9.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.9.0
+npm notice To update run: npm install -g npm@10.9.0
+npm notice
+
+
+changed 78 packages in 8s
+
+C:\Users\Malcolm>$vue create my-vtkjs-app
+'$vue' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\Malcolm>$ vue create my-vtkjs-app
+'$' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\Malcolm>vue create my-vtkjs-app
+?  Your connection to the default npm registry seems to be slow.
+   Use https://registry.npmmirror.com for faster installation? Yes
+
+
+Vue CLI v5.0.8
+? Please pick a preset: Default ([Vue 3] babel, eslint)
+
+
+Vue CLI v5.0.8
+✨  Creating project in C:\Users\Malcolm\my-vtkjs-app.
+🗃  Initializing git repository...
+⚙️  Installing CLI plugins. This might take a while...
+
+
+added 866 packages in 2m
+
+100 packages are looking for funding
+  run `npm fund` for details
+🚀  Invoking generators...
+📦  Installing additional dependencies...
+
+
+added 89 packages in 28s
+
+112 packages are looking for funding
+  run `npm fund` for details
+⚓  Running completion hooks...
+
+📄  Generating README.md...
+
+🎉  Successfully created project my-vtkjs-app.
+👉  Get started with the following commands:
+
+ $ cd my-vtkjs-app
+ $ npm run serve
