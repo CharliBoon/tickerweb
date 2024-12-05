@@ -429,17 +429,17 @@ class DataProvider_FileSystem(DataProvider): # file-system based provider
     
     def _GetDataDir(self, strMine: str) -> str:
         dirMine = self.dctDirs[strMine]['subDir']
-        return self.dirAllData + '\\' + dirMine
+        return self.dirAllData + '/' + dirMine
         
     def _GetPath(self, strMine: str, strType: str) -> list[str]:
         dirData = self._GetDataDir(strMine)
-        dirType = dirData + '\\'+strType
+        dirType = dirData + '/'+strType
         infType = self.dctTypes[strType]
         name, ext = infType.split('.')
         if name == '*': # wildcard - multiple files
-            return [dirType+'\\'+file for file in os.listdir(dirType) if file.endswith('.%s' % ext)]
+            return [dirType+'/'+file for file in os.listdir(dirType) if file.endswith('.%s' % ext)]
         else:
-            return dirType+'\\'+infType
+            return dirType+'/'+infType
     
     def GetModified(self, strMine: str) -> list[str]:
         lstModified = []
@@ -482,7 +482,7 @@ class DataProvider_FileSystem(DataProvider): # file-system based provider
 
 # Start Up Here ---------------------------------------------------------------
 
-provider = DataProvider_FileSystem('C:\\Users\\Malcolm\\Projects\\Web\\TickerWeb\\Data')
+provider = DataProvider_FileSystem('/home/ims/VSCodeProjects/TickerWeb/Data')
 provider.AddMine('Bambanani', 'Bambanani')
 provider.AddMine('Skorrosh', 'Skorrosh')
 
