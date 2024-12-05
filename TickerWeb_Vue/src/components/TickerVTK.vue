@@ -47,7 +47,6 @@
               <tr>
                 <td> <span class="me-2">{{ formattedTimestamp }}</span></td>
                 <td>
-                  
                   <input type="range" class="form-range" :min="events_timestamp_min" :max="events_timestamp_max"
                     :value="events_timestamp" @input="setEventTimeStamp($event.target.value)" />
                 </td>
@@ -498,8 +497,16 @@ export default {
         volume_max.value = volume_range[1]
         volume_iso.value = (volume_range[0] + volume_range[1]) / 2
         volume_mapper.setScalarRange(volume_range)
-        //		
+
         renderer.resetCamera()
+
+        const camera = renderer.getActiveCamera();
+
+        // Reduce the field of view to zoom in
+        const currentFoV = camera.getViewAngle();
+        const newFoV = currentFoV * 0.2;  // Decrease FoV to zoom in (you can adjust this factor)
+
+        camera.setViewAngle(newFoV);  
         renderWindow.render()
       })
     }
