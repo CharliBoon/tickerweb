@@ -22,6 +22,16 @@
           <h3>Settings</h3>
           <table class="settings-table">
             <tbody>
+              <tr>
+                <td> <span class="me-2">Mines</span></td>
+                <td>
+                  <select class="form-select" v-model="selectedMine" @change="updateMine">
+                    <option v-for="mine in mines" :key="mine.value" :value="mine.value">
+                      {{ mine.label }}
+                    </option>
+                  </select>
+                </td>
+              </tr>
               <!-- Nodes Section -->
               <tr>
                 <td colspan="2">
@@ -120,7 +130,7 @@
 
 <script>
 import axios from 'axios';
-import { ref, unref, onMounted, onBeforeUnmount, watchEffect, watch, computed } from 'vue';
+import { ref, reactive, unref, onMounted, onBeforeUnmount, watchEffect, watch, computed } from 'vue';
 // vtk
 import '@kitware/vtk.js/Rendering/Profiles/Geometry'; // geometry rendering for WebGL, WebGPU
 import '@kitware/vtk.js/Rendering/Profiles/Glyph';    // vtkGlyph3DMapper
@@ -147,13 +157,20 @@ import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 export default {
 
   setup() {
-    //const session = {user: 'malcolm', mine:'Bambanani'}
-    const session = { user: 'user', mine: 'Bambanani' }
+    const selectedMine = ref('Bambanani'); // Default mine
+    const session = reactive({ user: 'user', mine: selectedMine.value });
+
     let urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('mine')) {
-      session.mine = urlParams.get('mine')
+      selectedMine.value = urlParams.get('mine'); // Update the value of selectedMine
+      session.mine = selectedMine.value; // Update session.mine to match selectedMine
     }
+
+    // Update the URL to remove query parameters
     window.history.replaceState({}, document.title, window.location.pathname);
+
+
+    //const session = {user: 'malcolm', mine:'Bambanani'}
 
     let nodes = { 'data': [], 'meta': {} } // node data - response getNodes - for table, polydata
     let events = { 'data': [], 'meta': {} } // event data - response getEvents - for table, polydata
@@ -174,7 +191,9 @@ export default {
     const volume_iso = ref(2500);
     const volume_min = ref(0);
     const volume_max = ref(0);
-
+    const mines = ref([]);
+    
+  
     const formattedTimestamp = computed(() => {
       if (!events_timestamp.value) return 'Loading...'; // Check if it's defined
       const date = new Date(events_timestamp.value); // Use .value to access the actual value
@@ -302,6 +321,29 @@ export default {
       volume_surface.setContourValue(iso_value)
       renderWindow.render()
     }
+
+    async function fetchMines() {
+    try {
+      const response = await fetch(path + '/mines');
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      const data = await response.json();
+      mines.value = data.map((mine) => ({
+        value: mine.id || mine,
+        label: mine.name || mine,
+      }));
+    } catch (error) {
+      console.error('Error fetching mines:', error);
+    }
+  }
+
+  // Watch for changes in selectedMine and trigger updates
+  watch(selectedMine, async (newMine) => {
+    session.mine = newMine; // Update session with new mine
+    console.log(`Mine changed to: ${newMine}`);
+    await getAllAndRender(); // Re-fetch and re-render data for the new mine
+  });
+
+
 
     // provide data to vtk pipelines ------------------------------------------
 
@@ -506,7 +548,7 @@ export default {
         const currentFoV = camera.getViewAngle();
         const newFoV = currentFoV * 0.2;  // Decrease FoV to zoom in (you can adjust this factor)
 
-        camera.setViewAngle(newFoV);  
+        camera.setViewAngle(newFoV);
         renderWindow.render()
       })
     }
@@ -549,6 +591,8 @@ export default {
 
     onMounted(() => {
       console.log('onMounted');
+
+      fetchMines();
 
       if (!context.value) {
         const fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
@@ -657,6 +701,8 @@ export default {
       volume_max,
       setVolumeIso,
       formattedTimestamp,
+      mines,
+      selectedMine,
     };
   },
 }
