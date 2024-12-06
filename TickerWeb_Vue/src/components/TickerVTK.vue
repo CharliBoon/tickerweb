@@ -8,7 +8,7 @@
         </button>
 
         <div class="brand">
-          <h1 class="title">I Wannabe Nexus</h1>
+          <h1 class="title">Wannabe Nexus</h1>
           <img src="../assets/logo.png" alt="IMS Logo" class="logo" />
         </div>
       </div>
@@ -153,6 +153,7 @@ import vtkCellArray from '@kitware/vtk.js/Common/Core/CellArray'
 import vtkLookupTable from '@kitware/vtk.js/Common/Core/LookupTable';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 
+import vtkPointPicker from '@kitware/vtk.js/Rendering/Core/PointPicker';
 
 export default {
 
@@ -209,14 +210,8 @@ export default {
 
     const formattedTimestamp = computed(() => {
       if (!events_timestamp.value) return 'Loading...'; // Check if it's defined
-      const date = new Date(events_timestamp.value); // Use .value to access the actual value
-      const yyyy = date.getFullYear();
-      const MM = String(date.getMonth() + 1).padStart(2, '0');
-      const dd = String(date.getDate()).padStart(2, '0');
-      const HH = String(date.getHours()).padStart(2, '0');
-      const mm = String(date.getMinutes()).padStart(2, '0');
-      const ss = String(date.getSeconds()).padStart(2, '0');
-      return `${yyyy}/${MM}/${dd} ${HH}:${mm}:${ss}`;
+
+      return new Date(events_timestamp.value * 1000).toLocaleString();
     });
     const textEncoder = new TextEncoder();
     const path = 'http://localhost:5000';
@@ -292,7 +287,7 @@ export default {
     events_actor.getProperty().setOpacity(0.5)
 
     function toggleSettings() {
-      this.showSettings = !this.showSettings;
+      showSettings.value = !showSettings.value;
     }
 
     function setNodeRepresentation(rep) {
@@ -651,6 +646,87 @@ export default {
       // Render all and start monitoring for changes
       getAllAndRender();
 
+
+      const picker = vtkPointPicker.newInstance();
+      picker.setPickFromList(1);
+      picker.initializePickList();
+      picker.addPickList(events_actor);
+
+      picker.setTolerance(0.01);
+
+      let currentPopup = null;
+
+      // Pick on mouse right click
+      renderWindow.getInteractor().onLeftButtonPress((callData) => {
+
+        if (currentPopup) {
+          currentPopup.remove();
+        }
+
+        if (showSettings.value) {
+          console.log("Closing settings panel...");
+          toggleSettings(); // Close the settings panel
+        }
+
+        if (renderer !== callData.pokedRenderer) {
+          return;
+        }
+
+        const pos = callData.position;
+        const point = [pos.x, pos.y, 0.0];
+        console.log(`Pick at: ${point}`);
+        picker.pick(point, renderer);
+
+        const pickedActors = picker.getActors();
+        if (pickedActors.length === 0) {
+          console.log("No point picked.");
+          return;
+        }
+
+        const pickedPointId = picker.getPointId();
+        console.log('Picked point ID:', pickedPointId);
+
+        // Remove existing popup if present
+       
+
+        // Access the dataset of the events_actor
+        const mapper = events_actor.getMapper();
+        if (mapper) {
+          const dataset = mapper.getInputData();
+          if (dataset) {
+            const magsArray = dataset.getPointData().getArray('mags');
+            const timestampArray = dataset.getPointData().getArray('timestamp');
+
+            const pickedMag = magsArray.getData()[pickedPointId];
+            const pickedTimestamp = timestampArray.getData()[pickedPointId];
+            const roundedMag = pickedMag.toFixed(1); // Round to 1 decimal place
+
+
+            console.log(`Picked Point Magnitude: ${roundedMag}`);
+            console.log(`Picked Point Timestamp: ${pickedTimestamp}`);
+
+            // Create and display the popup
+            currentPopup = document.createElement('div');
+            currentPopup.className = 'event-popup';
+            // Adjust the popup position relative to the click
+            currentPopup.style.position = 'fixed';
+            currentPopup.style.bottom = '20px'; // 20px from the bottom of the viewport
+            currentPopup.style.left = '50%'; // Center horizontally
+            currentPopup.style.transform = 'translateX(-50%)'; // Center-align using transform
+            currentPopup.innerHTML = `
+        <div class="popup-header">Event Details</div>
+        <div class="popup-content">
+          <strong>Magnitude:</strong> ${roundedMag}<br>
+          <strong>Timestamp:</strong> ${new Date(pickedTimestamp * 1000).toLocaleString()}
+        </div>
+      `;
+            document.body.appendChild(currentPopup);
+          }
+        } else {
+          console.log('No mapper found for the actor.');
+        }
+      });
+
       // Start the interval for checking modifications
       context.value.checkModifiedInterval = setInterval(checkModified, 30000);
     });
@@ -879,5 +955,32 @@ body {
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
+}
+
+.event-popup {
+  position: absolute;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  z-index: 1000;
+  width: 200px;
+}
+
+.event-popup .popup-header {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+  text-align: center;
+  background-color: #f4f4f4;
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+}
+
+.event-popup .popup-content {
+  font-size: 14px;
+  line-height: 1.5;
 }
 </style>
