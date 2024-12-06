@@ -169,7 +169,6 @@ export default {
     // Update the URL to remove query parameters
     window.history.replaceState({}, document.title, window.location.pathname);
 
-
     //const session = {user: 'malcolm', mine:'Bambanani'}
 
     let nodes = { 'data': [], 'meta': {} } // node data - response getNodes - for table, polydata
@@ -178,6 +177,7 @@ export default {
     let bounds = null // new Array(6).fill(0.0)
 
     const vtkContainer = ref(null);
+    const fullScreenRenderer = ref(null);
     const context = ref(null);
     const showSettings = ref(false);
     const node_representation = ref(0);
@@ -192,8 +192,21 @@ export default {
     const volume_min = ref(0);
     const volume_max = ref(0);
     const mines = ref([]);
-    
-  
+
+    // Function to initialize the vtkFullScreenRenderWindow
+    const initializeRenderer = () => {
+      if (!fullScreenRenderer.value) {
+        fullScreenRenderer.value = vtkFullScreenRenderWindow.newInstance({
+          rootContainer: vtkContainer.value,
+          containerStyle: {
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+          },
+        });
+      }
+    };
+
     const formattedTimestamp = computed(() => {
       if (!events_timestamp.value) return 'Loading...'; // Check if it's defined
       const date = new Date(events_timestamp.value); // Use .value to access the actual value
@@ -323,25 +336,25 @@ export default {
     }
 
     async function fetchMines() {
-    try {
-      const response = await fetch(path + '/mines');
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-      const data = await response.json();
-      mines.value = data.map((mine) => ({
-        value: mine.id || mine,
-        label: mine.name || mine,
-      }));
-    } catch (error) {
-      console.error('Error fetching mines:', error);
+      try {
+        const response = await fetch(path + '/mines');
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        mines.value = data.map((mine) => ({
+          value: mine.id || mine,
+          label: mine.name || mine,
+        }));
+      } catch (error) {
+        console.error('Error fetching mines:', error);
+      }
     }
-  }
 
-  // Watch for changes in selectedMine and trigger updates
-  watch(selectedMine, async (newMine) => {
-    session.mine = newMine; // Update session with new mine
-    console.log(`Mine changed to: ${newMine}`);
-    await getAllAndRender(); // Re-fetch and re-render data for the new mine
-  });
+    // Watch for changes in selectedMine and trigger updates
+    watch(selectedMine, async (newMine) => {
+      session.mine = newMine; // Update session with new mine
+      console.log(`Mine changed to: ${newMine}`);
+      await getAllAndRender(); // Re-fetch and re-render data for the new mine
+    });
 
 
 
@@ -566,7 +579,6 @@ export default {
       })
     }
 
-
     watch(events_timestamp, (newValue) => {
       onEventFilter(newValue)
     })
@@ -591,66 +603,56 @@ export default {
 
     onMounted(() => {
       console.log('onMounted');
+      initializeRenderer();
 
       fetchMines();
 
-      if (!context.value) {
-        const fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
-          rootContainer: vtkContainer.value,
-          containerStyle: {
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-          },
-        });
+      const renderer = fullScreenRenderer.value.getRenderer();
+      const renderWindow = fullScreenRenderer.value.getRenderWindow();
 
-        const renderer = fullScreenRenderer.getRenderer();
-        const renderWindow = fullScreenRenderer.getRenderWindow();
+      // Set background and enable depth
+      renderer.setBackground(1.0, 1.0, 1.0);
+      renderer.setUseDepthPeeling(false);
+      renderer.setMaximumNumberOfPeels(100);
+      renderer.setOcclusionRatio(0.01);
+      renderer.setInteractive(true);
 
-        // Set background and enable depth 
-        renderer.setBackground(1.0, 1.0, 1.0);
-        renderer.setUseDepthPeeling(false);
-        renderer.setMaximumNumberOfPeels(100);
-        renderer.setOcclusionRatio(0.01);
-        renderer.setInteractive(true);
+      // Add actors
+      renderer.addActor(node_actor);
+      renderer.addActor(plan_actor);
+      renderer.addActor(events_actor);  // events_actor added for picking
+      renderer.addActor(volume_actor);
+      renderer.addActor(outline_actor);
 
-        // Add actors
-        renderer.addActor(node_actor);
-        renderer.addActor(plan_actor);
-        renderer.addActor(events_actor);
-        renderer.addActor(volume_actor);
-        renderer.addActor(outline_actor);
+      // Store context for later access
+      context.value = {
+        fullScreenRenderer,
+        renderWindow,
+        renderer,
+        node_actor,
+        node_mapper,
+        node_glyph,
+        events_actor,
+        events_mapper,
+        plan_reader,
+        plan_mapper,
+        plan_actor,
+        volume_reader,
+        volume_surface,
+        volume_mapper,
+        volume_actor,
+        outline,
+        outline_mapper,
+        outline_actor, // Store the picker for later access
+      };
 
-        // Store context for later access
-        context.value = {
-          fullScreenRenderer,
-          renderWindow,
-          renderer,
-          node_actor,
-          node_mapper,
-          node_glyph,
-          events_actor,
-          events_mapper,
-          plan_reader,
-          plan_mapper,
-          plan_actor,
-          volume_reader,
-          volume_surface,
-          volume_mapper,
-          volume_actor,
-          outline,
-          outline_mapper,
-          outline_actor,
-        };
+      renderWindow.render();
 
-        renderWindow.render();
+      // Render all and start monitoring for changes
+      getAllAndRender();
 
-        // Render all and start monitoring for changes
-        getAllAndRender();
-
-        // Start the interval for checking modifications
-        context.value.checkModifiedInterval = setInterval(checkModified, 30000);
-      }
+      // Start the interval for checking modifications
+      context.value.checkModifiedInterval = setInterval(checkModified, 30000);
     });
 
     onBeforeUnmount(() => {
