@@ -288,6 +288,13 @@ export default {
 
     function toggleSettings() {
       showSettings.value = !showSettings.value;
+
+      // Remove existing popup if present
+      const elements = document.body.getElementsByClassName('event-popup');
+      while (elements.length > 0) {
+        elements[0].remove();
+      }
+
     }
 
     function setNodeRepresentation(rep) {
