@@ -284,7 +284,7 @@ export default {
     events_mapper.setScalarVisibility(true);
     events_mapper.setScalarModeToUsePointData()
     events_actor.setMapper(events_mapper)
-    events_actor.getProperty().setOpacity(0.5)
+    events_actor.getProperty().setOpacity(1.0)
 
     function toggleSettings() {
       showSettings.value = !showSettings.value;
@@ -590,7 +590,8 @@ export default {
         node_mapper.update()
         plan_actor.getProperty().setOpacity(unref(plan_opacity) * 0.01);
         plan_actor.getProperty().setRepresentation(unref(plan_representation))
-        events_actor.getProperty().setOpacity(unref(events_opacity) * 0.01)
+        //events_actor.getProperty().setOpacity(unref(events_opacity) * 0.01)
+        events_actor.getProperty().setOpacity(1)
         volume_actor.getProperty().setOpacity(unref(volume_opacity) * 0.01)
         renderWindow.render();
       }
@@ -687,7 +688,10 @@ export default {
         console.log('Picked point ID:', pickedPointId);
 
         // Remove existing popup if present
-       
+        const elements = document.body.getElementsByClassName('event-popup');
+        while (elements.length > 0) {
+          elements[0].remove();
+        }
 
         // Access the dataset of the events_actor
         const mapper = events_actor.getMapper();
